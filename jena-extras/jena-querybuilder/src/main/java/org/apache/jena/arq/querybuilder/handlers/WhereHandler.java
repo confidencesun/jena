@@ -21,12 +21,9 @@ import java.util.Iterator ;
 import java.util.List ;
 import java.util.Map ;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder ;
-import org.apache.jena.arq.querybuilder.clauses.ConstructClause ;
-import org.apache.jena.arq.querybuilder.clauses.DatasetClause ;
-import org.apache.jena.arq.querybuilder.clauses.SolutionModifierClause ;
-import org.apache.jena.arq.querybuilder.clauses.WhereClause ;
-import org.apache.jena.arq.querybuilder.rewriters.ElementRewriter ;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.clauses.ConstructClause;
+import org.apache.jena.arq.querybuilder.rewriters.ElementRewriter;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.Triple ;
 import org.apache.jena.query.Query ;
@@ -214,8 +211,7 @@ public class WhereHandler implements Handler {
 	 * @param subQuery The sub query to convert
 	 * @return THe converted element.
 	 */
-	@SuppressWarnings("cast")
-    private ElementSubQuery makeSubQuery(SelectBuilder subQuery) {
+	private ElementSubQuery makeSubQuery(SelectBuilder subQuery) {
 		Query q = new Query();
 		PrologHandler ph = new PrologHandler(query);
 		ph.addAll(subQuery.getPrologHandler());
@@ -230,22 +226,12 @@ public class WhereHandler implements Handler {
 			ch.addAll(((ConstructClause<?>) subQuery).getConstructHandler());
 
 		}
-		if (subQuery instanceof DatasetClause) {
-			DatasetHandler dh = new DatasetHandler(q);
-			dh.addAll(((DatasetClause<?>) subQuery).getDatasetHandler());
-
-		}
-		if (subQuery instanceof SolutionModifierClause) {
-			SolutionModifierHandler smh = new SolutionModifierHandler(q);
-			smh.addAll(((SolutionModifierClause<?>) subQuery)
-					.getSolutionModifierHandler());
-
-		}
-		if (subQuery instanceof WhereClause) {
-			WhereHandler wh = new WhereHandler(q);
-			wh.addAll(((WhereClause<?>) subQuery).getWhereHandler());
-
-		}
+		DatasetHandler dh = new DatasetHandler(q);
+		dh.addAll( subQuery.getDatasetHandler() );
+		SolutionModifierHandler smh = new SolutionModifierHandler(q);
+		smh.addAll( subQuery.getSolutionModifierHandler() );
+		WhereHandler wh = new WhereHandler(q);
+		wh.addAll( subQuery.getWhereHandler() );
 		return new ElementSubQuery(q);
 
 	}
@@ -255,18 +241,29 @@ public class WhereHandler implements Handler {
 	 * @param subQuery The subquery to add as the union.
 	 */
 	public void addUnion(SelectBuilder subQuery) {
-		ElementUnion union = new ElementUnion();
+		ElementUnion union=null; 
+		ElementGroup clause = getClause();
+		// if the last element is a union make sure we add to it.
+		if ( ! clause.isEmpty() ) {
+			Element lastElement =  clause.getElements().get(clause.getElements().size()-1);
+			if (lastElement instanceof ElementUnion)	
+			{
+				union = (ElementUnion) lastElement;
+			}
+		}	
+		if (union == null)
+		{
+			union = new ElementUnion();
+			clause.addElement( union );
+		}
 		if (subQuery.getVars().size() > 0) {
 			union.addElement(makeSubQuery(subQuery));
 		} else {
 			PrologHandler ph = new PrologHandler(query);
 			ph.addAll(subQuery.getPrologHandler());
-			for (Element el : subQuery.getWhereHandler().getClause()
-					.getElements()) {
-				union.addElement(el);
-			}
+			union.addElement( subQuery.getWhereHandler().getClause() );
 		}
-		getClause().addElement(union);
+		
 	}
 
 	/**

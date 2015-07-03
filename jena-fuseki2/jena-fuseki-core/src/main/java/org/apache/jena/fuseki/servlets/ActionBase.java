@@ -201,7 +201,7 @@ public abstract class ActionBase extends ServletBase
                 String h = en.nextElement() ;
                 Enumeration<String> vals = action.request.getHeaders(h) ;
                 if ( !vals.hasMoreElements() )
-                    log.info(format("[%d]   ", action.id, h)) ;
+                    log.info(format("[%d]   %s", action.id, h)) ;
                 else {
                     for (; vals.hasMoreElements();)
                         log.info(format("[%d]   %-20s %s", action.id, h, vals.nextElement())) ;
@@ -234,10 +234,10 @@ public abstract class ActionBase extends ServletBase
         String timeStr = fmtMillis(time) ;
 
         if ( action.message == null )
-            log.info(String.format("[%d] %d %s (%s) ", action.id, action.statusCode,
+            log.info(String.format("[%d] %d %s (%s)", action.id, action.statusCode,
                                    HttpSC.getMessage(action.statusCode), timeStr)) ;
         else
-            log.info(String.format("[%d] %d %s (%s) ", action.id, action.statusCode, action.message, timeStr)) ;
+            log.info(String.format("[%d] %d %s (%s)", action.id, action.statusCode, action.message, timeStr)) ;
         
         // See also HttpAction.finishRequest - request logging happens there.
     }
