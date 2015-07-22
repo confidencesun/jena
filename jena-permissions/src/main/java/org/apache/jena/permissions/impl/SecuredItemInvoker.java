@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
-import org.apache.jena.permissions.SecuredItem;
-
 
 /**
  * A generic InvocationHandler that handles the general invocation of the

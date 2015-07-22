@@ -25,23 +25,17 @@ public class TextHit
 {
     private Node node;
     private float score;
-    private Node literal;
 
-    public TextHit(Node node, float score, Node literal) {
+    public TextHit(Node node, float score) {
         this.node = node;
         this.score = score;
-        this.literal = literal;
     }
-
+    
     public Node getNode() {
         return this.node;
     }
     
     public float getScore() {
         return this.score;
-    }
-
-    public Node getLiteral() {
-        return this.literal;
     }
 }

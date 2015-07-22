@@ -21,10 +21,9 @@ import java.security.Principal;
 import java.util.Set;
 
 import org.apache.jena.graph.Graph ;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.permissions.SecurityEvaluator;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode.Type;
 import org.apache.jena.permissions.query.rewriter.OpRewriter;
 import org.apache.jena.query.Query ;
 import org.apache.jena.permissions.graph.SecuredGraph;
@@ -42,7 +41,7 @@ public class SecuredQueryEngine extends QueryEngineMain
 			.getLogger(SecuredQueryEngine.class);
 
 	private SecurityEvaluator securityEvaluator;
-	private Node graphIRI;
+	private SecNode graphIRI;
 
 	/*
 	 * public SecuredQueryEngine( Op op, DatasetGraph dataset, Binding input,
@@ -89,54 +88,54 @@ public class SecuredQueryEngine extends QueryEngineMain
 		}
 		else
 		{
-			graphIRI = NodeFactory.createURI( "urn:x-arq:DefaultGraph");
+			graphIRI = new SecNode(Type.URI, "urn:x-arq:DefaultGraph");
 			this.securityEvaluator = new SecurityEvaluator() {
 
 				@Override
 				public boolean evaluate( final Object principal, final Action action,
-						final Node graphIRI )
+						final SecNode graphIRI )
 				{
 					return true;
 				}
 
 				@Override
 				public boolean evaluate( final Object principal, final Action action,
-						final Node graphIRI, final Triple triple )
+						final SecNode graphIRI, final SecTriple triple )
 				{
 					return true;
 				}
 
 				@Override
 				public boolean evaluate( final Object principal, final Set<Action> action,
-						final Node graphIRI )
+						final SecNode graphIRI )
 				{
 					return true;
 				}
 
 				@Override
 				public boolean evaluate( final Object principal, final Set<Action> action,
-						final Node graphIRI, final Triple triple )
+						final SecNode graphIRI, final SecTriple triple )
 				{
 					return true;
 				}
 
 				@Override
 				public boolean evaluateAny( final Object principal, final Set<Action> action,
-						final Node graphIRI )
+						final SecNode graphIRI )
 				{
 					return true;
 				}
 
 				@Override
 				public boolean evaluateAny( final Object principal, final Set<Action> action,
-						final Node graphIRI, final Triple triple )
+						final SecNode graphIRI, final SecTriple triple )
 				{
 					return true;
 				}
 
 				@Override
-				public boolean evaluateUpdate( final Object principal, final Node graphIRI,
-						final Triple from, final Triple to )
+				public boolean evaluateUpdate( final Object principal, final SecNode graphIRI,
+						final SecTriple from, final SecTriple to )
 				{
 					return true;
 				}

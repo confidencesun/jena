@@ -25,7 +25,10 @@ import java.util.Collection ;
 import org.apache.jena.atlas.junit.BaseTest ;
 import org.apache.jena.atlas.lib.ByteBufferLib ;
 import org.apache.jena.graph.Node ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.sparql.util.NodeFactoryExtra ;
+import org.apache.jena.tdb.store.nodetable.Nodec ;
+import org.apache.jena.tdb.store.nodetable.NodecSSE ;
 import org.junit.Test ;
 import org.junit.runner.RunWith ;
 import org.junit.runners.Parameterized ;
@@ -95,9 +98,9 @@ public class TestCodec extends BaseTest
     @Test public void nodec_uri_02()    { test ("<http://example/>") ; }
     
     // Jena anon ids can have a string form including ":"
-    @Test public void nodec_blank_01()  { test (org.apache.jena.graph.NodeFactory.createBlankNode("a")) ; }
-    @Test public void nodec_blank_02()  { test (org.apache.jena.graph.NodeFactory.createBlankNode("a:b:c-d")) ; }
-    @Test public void nodec_blank_03()  { test (org.apache.jena.graph.NodeFactory.createBlankNode()) ; }
+    @Test public void nodec_blank_01()  { test (org.apache.jena.graph.NodeFactory.createAnon(new AnonId("a"))) ; }
+    @Test public void nodec_blank_02()  { test (org.apache.jena.graph.NodeFactory.createAnon(new AnonId("a:b:c-d"))) ; }
+    @Test public void nodec_blank_03()  { test (org.apache.jena.graph.NodeFactory.createAnon()) ; }
     
     private void test(String sseString)
     {

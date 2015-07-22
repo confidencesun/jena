@@ -19,9 +19,9 @@
 package org.apache.jena.query.text;
 
 import org.apache.jena.atlas.logging.Log ;
-import org.apache.jena.datatypes.RDFDatatype ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.sparql.core.Quad ;
 import org.apache.jena.sparql.util.FmtUtils ;
 
@@ -54,7 +54,7 @@ public class TextQueryFuncs {
     public static Node stringToNode(String v) {
         if ( v.startsWith("_:") ) {
             v = v.substring("_:".length()) ;
-            return NodeFactory.createBlankNode(v) ;
+            return NodeFactory.createAnon(new AnonId(v)) ;
         }
         else
             return NodeFactory.createURI(v) ;
@@ -78,8 +78,7 @@ public class TextQueryFuncs {
         String x = TextQueryFuncs.subjectToString(s) ;
         String graphText = TextQueryFuncs.graphNodeToString(g) ;
         String language = o.getLiteral().language() ;
-        RDFDatatype datatype = o.getLiteral().getDatatype() ;
-        Entity entity = new Entity(x, graphText, language, datatype) ;
+        Entity entity = new Entity(x, graphText, language) ;
         String graphField = defn.getGraphField() ;
         if ( defn.getGraphField() != null )
             entity.put(graphField, graphText) ;

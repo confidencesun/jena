@@ -321,12 +321,12 @@ public class GraphList
         if ( list.size() == 0 )
             return RDF.Nodes.nil ;
         
-        Node head = NodeFactory.createBlankNode() ;
+        Node head = NodeFactory.createAnon() ;
         Node n = head ;
         for ( Node elt : list )
         {
             // Cell:
-            Node consCell = NodeFactory.createBlankNode() ;
+            Node consCell = NodeFactory.createAnon() ;
             // Last cell to this one.
             Triple t = new Triple(n, RDF.Nodes.rest, consCell) ;
             Triple t1 = new Triple(consCell, RDF.Nodes.first, elt) ;

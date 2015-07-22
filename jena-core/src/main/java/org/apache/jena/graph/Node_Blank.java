@@ -18,29 +18,25 @@
 
 package org.apache.jena.graph;
 
-
+import org.apache.jena.rdf.model.* ;
 
 /**
     RDF blank nodes, ie nodes with identity but without URIs.
 */
 
 public class Node_Blank extends Node_Concrete
-    {
-    /** @deprecated Use {@link Node_Blank#BlankNodeId} */
-    @Deprecated
+    {    
     /* package */ Node_Blank( Object id ) { super( id ); }
-
-    /* package */ Node_Blank( BlankNodeId id ) { super( id ); } 
 
     @Override
     public boolean isBlank() { return true; }
 
     @Override
-    public BlankNodeId getBlankNodeId()  { return (BlankNodeId) label; }
+    public AnonId getBlankNodeId()  { return (AnonId) label; }
     
     @Override
     public Object visitWith( NodeVisitor v )
-        { return v.visitBlank( this, (BlankNodeId) label ); }
+        { return v.visitBlank( this, (AnonId) label ); }
     
     @Override
     public boolean equals( Object other )

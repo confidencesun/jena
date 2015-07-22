@@ -18,15 +18,16 @@
 
 package org.apache.jena.sdb.layout2;
 
-import java.sql.ResultSet ;
-import java.sql.SQLException ;
-import java.util.Collection ;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
 
 import org.apache.jena.datatypes.RDFDatatype ;
 import org.apache.jena.datatypes.TypeMapper ;
 import org.apache.jena.datatypes.xsd.XSDDatatype ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.sdb.compiler.SqlBuilder ;
 import org.apache.jena.sdb.core.AliasesSql ;
 import org.apache.jena.sdb.core.SDBRequest ;
@@ -44,8 +45,8 @@ import org.apache.jena.sparql.core.Var ;
 import org.apache.jena.sparql.engine.binding.Binding ;
 import org.apache.jena.sparql.engine.binding.BindingFactory ;
 import org.apache.jena.sparql.engine.binding.BindingMap ;
-import org.slf4j.Logger ;
-import org.slf4j.LoggerFactory ;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SQLBridge2 extends SQLBridgeBase 
 {
@@ -233,7 +234,7 @@ public class SQLBridge2 extends SQLBridgeBase
         switch (vType)
         {
             case BNODE:
-                return NodeFactory.createBlankNode(lex) ;
+                return NodeFactory.createAnon(new AnonId(lex)) ;
             case URI:
                 return NodeFactory.createURI(lex) ;
             case STRING:

@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jena.permissions;
+package org.apache.jena.permissions.impl;
 
-import org.apache.jena.graph.FrontsTriple;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Triple;
+import org.apache.jena.permissions.SecurityEvaluator;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.SecurityEvaluator.SecTriple;
 
 /**
  * The secured item interface is mixed into instances of secured objects by the
@@ -28,7 +28,7 @@ import org.apache.jena.graph.Triple;
  */
 public interface SecuredItem
 {
-	
+
 	/**
 	 * Utilities for SecuredItem implementations.
 	 */
@@ -51,16 +51,6 @@ public interface SecuredItem
 					.equals(si2.getSecurityEvaluator())
 					&& si1.getModelIRI().equals(si2.getModelIRI());
 		}
-		
-		public static String modelPermissionMsg( final Node modelURI )
-		{
-			return String.format("Model permissions violation: %s", modelURI);
-		}
-		
-		public static String triplePermissionMsg( final Node modelURI )
-		{
-			return String.format("Triple permissions violation: %s", modelURI);
-		}
 	}
 
 	/**
@@ -77,26 +67,14 @@ public interface SecuredItem
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param t
 	 *            The triple to check
 	 * @return true if the triple can be created.
 	 */
-	public boolean canCreate( Triple t );
+	public boolean canCreate( SecTriple t );
 
-	
-	/**
-	 * Return true if the fronted triple can be created.
-	 * 
-	 * See canRead(Triple t)
-	 * 
-	 * @param t
-	 *            The fronted triple to check
-	 * @return true if the triple can be created.
-	 */
-	public boolean canCreate( FrontsTriple t );
-	
 	/**
 	 * @return true if the securedModel allows items to to be deleted.
 	 */
@@ -111,24 +89,13 @@ public interface SecuredItem
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param t
 	 *            The triple to check
 	 * @return true if the triple can be deleted.
 	 */
-	public boolean canDelete( Triple t );
-	
-	/**
-	 * Return true if the fronted triple can be deleted.
-	 * 
-	 * See canRead(Triple t)
-	 * 
-	 * @param t
-	 *            The fronted triple to check
-	 * @return true if the triple can be deleted.
-	 */
-	public boolean canDelete( FrontsTriple t );
+	public boolean canDelete( SecTriple t );
 
 	/**
 	 * @return true if the securedModel allows items to to be read.
@@ -153,17 +120,8 @@ public interface SecuredItem
 	 *            The triple to check
 	 * @return true if the triple can be read.
 	 */
-	public boolean canRead( Triple t );
+	public boolean canRead( SecTriple t );
 
-	/**
-	 * Return true if the fronted triple can be read.
-	 * 
-	 * @param t
-	 *            The frontedtriple to check
-	 * @return true if the triple can be read.
-	 */
-	public boolean canRead( FrontsTriple t );
-	
 	/**
 	 * @return true if the securedModel allows items to to be updated.
 	 */
@@ -178,7 +136,7 @@ public interface SecuredItem
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param from
 	 *            The triple that will be changed
@@ -186,22 +144,8 @@ public interface SecuredItem
 	 *            The resulting triple.
 	 * @return true if the from triple can be updated as the to triple.
 	 */
-	public boolean canUpdate( Triple from, Triple to );
+	public boolean canUpdate( SecTriple from, SecTriple to );
 
-	/**
-	 * Return true if the fronted triple can be updated.
-	 * 
-	 * 
-	 * See canUpdate(Triple from, Triple to)
-	 * 
-	 * @param from
-	 *            The fronted triple that will be changed
-	 * @param to
-	 *            The resulting fronted triple.
-	 * @return true if the from triple can be updated as the to triple.
-	 */
-	public boolean canUpdate( FrontsTriple from, FrontsTriple to );
-	
 	@Override
 	public boolean equals( Object o );
 
@@ -216,9 +160,9 @@ public interface SecuredItem
 	public String getModelIRI();
 
 	/**
-	 * @return The node representation of the securedModel IRI.
+	 * @return The node represnetation of the securedModel IRI.
 	 */
-	public Node getModelNode();
+	public SecNode getModelNode();
 
 	/**
 	 * The SecurityEvaluator implementation that is being used to determine

@@ -34,7 +34,6 @@ import org.junit.runners.Suite.SuiteClasses ;
     , TestDatasetWithLuceneTextIndexWithLangField.class
     , TestDatasetWithLuceneGraphTextIndex.class
     , TestDatasetWithLuceneTextIndexDeletionSupport.class
-    , TestDatasetWithLuceneStoredLiterals.class
 
     // Embedded solr not supported 
     //, TestDatasetWithEmbeddedSolrTextIndex.class

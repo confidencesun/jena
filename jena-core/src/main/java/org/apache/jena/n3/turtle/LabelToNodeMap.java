@@ -46,7 +46,7 @@ public class LabelToNodeMap
     
     public Node allocNode()
     {
-        return NodeFactory.createBlankNode() ;
+        return NodeFactory.createAnon() ;
     }
     
     public void clear()

@@ -18,16 +18,26 @@
 
 package org.apache.jena.testing_framework;
 
-import static org.junit.Assert.assertTrue ;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.io.* ;
-import java.util.HashMap ;
-import java.util.Map ;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
-import org.apache.jena.graph.* ;
-import org.apache.jena.rdf.model.Model ;
-import org.apache.jena.rdf.model.ModelFactory ;
-import org.junit.Test ;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.AnonId;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.graph.Factory;
 
 /**
  * Class that produces RDF and TTL data, a Graph and a Model that all contain
@@ -216,11 +226,11 @@ public class TestFileData {
 				NodeFactory.createURI("http://example.com/predicate"),
 				NodeFactory.createURI("http://example.com/object")));
 
-		g.add(new Triple(NodeFactory.createBlankNode(BlankNodeId.create("a")),
+		g.add(new Triple(NodeFactory.createAnon(AnonId.create("a")),
 				NodeFactory.createURI("http://example.com/p1"), NodeFactory
-						.createBlankNode(BlankNodeId.create("b"))));
+						.createAnon(AnonId.create("b"))));
 
-		g.add(new Triple(NodeFactory.createBlankNode(BlankNodeId.create("b")),
+		g.add(new Triple(NodeFactory.createAnon(AnonId.create("b")),
 				NodeFactory.createURI("http://example.com/p2"), NodeFactory
 						.createLiteral("foo")));
 

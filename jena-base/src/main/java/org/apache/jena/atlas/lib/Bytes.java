@@ -84,7 +84,7 @@ public class Bytes
 
     /** Put an int value into an allocated byte array. 
      * @param v
-     * @return byte[] array 
+     * @returns byte[] array 
      * @see Integer#SIZE
      */
     public static byte[] intToBytes(int v) {
@@ -95,7 +95,7 @@ public class Bytes
     
     /** Put a long value into an allocated byte array. 
      * @param v
-     * @return byte[] array 
+     * @returns byte[] array 
      * @see Long#SIZE
      */
     public static byte[] longToBytes(long v) {

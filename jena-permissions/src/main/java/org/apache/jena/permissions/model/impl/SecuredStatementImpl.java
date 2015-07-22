@@ -253,7 +253,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	public SecuredReifiedStatement createReifiedStatement()
 	{
 		checkUpdate();
-		checkCreateReified(null, holder.getBaseItem());
+		checkCreateReified(null,
+				SecuredItemImpl.convert(holder.getBaseItem().asTriple()));
 		return SecuredReifiedStatementImpl.getInstance(getModel(), holder
 				.getBaseItem().createReifiedStatement());
 	}
@@ -262,7 +263,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	public SecuredReifiedStatement createReifiedStatement( final String uri )
 	{
 		checkUpdate();
-		checkCreateReified(uri, holder.getBaseItem());
+		checkCreateReified(uri,
+				SecuredItemImpl.convert(holder.getBaseItem().asTriple()));
 		return SecuredReifiedStatementImpl.getInstance(getModel(), holder
 				.getBaseItem().createReifiedStatement(uri));
 	}

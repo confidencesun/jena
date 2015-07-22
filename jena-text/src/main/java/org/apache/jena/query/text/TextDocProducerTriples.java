@@ -53,9 +53,6 @@ public class TextDocProducerTriples implements TextDocProducer {
     }
 
     @Override
-    public void reset() { }
-
-    @Override
     public void change(QuadAction qaction, Node g, Node s, Node p, Node o) {
         // One document per triple/quad
 

@@ -20,6 +20,7 @@ package org.apache.jena.riot.checker;
 
 import org.apache.jena.graph.* ;
 import org.apache.jena.graph.impl.LiteralLabel ;
+import org.apache.jena.rdf.model.AnonId ;
 
 public class CheckerVisitor implements NodeVisitor
 {
@@ -30,7 +31,7 @@ public class CheckerVisitor implements NodeVisitor
     }
 
     @Override
-    public Object visitBlank(Node_Blank it, BlankNodeId id)
+    public Object visitBlank(Node_Blank it, AnonId id)
     {
         return null ;
     }

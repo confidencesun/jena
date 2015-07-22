@@ -21,7 +21,7 @@ package org.apache.jena.atlas.lib;
 import java.util.function.BiConsumer;
 
 /**
- * @deprecated Use {@link BiConsumer}.
+ * @drepecated Use {@link BiConsumer}.
  */
 @Deprecated
 public interface ActionKeyValue<KeyType, ValueType> extends BiConsumer<KeyType, ValueType>

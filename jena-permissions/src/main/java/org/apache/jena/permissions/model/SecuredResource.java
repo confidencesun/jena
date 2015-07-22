@@ -18,12 +18,9 @@
 package org.apache.jena.permissions.model;
 
 import org.apache.jena.datatypes.RDFDatatype ;
+import org.apache.jena.permissions.AccessDeniedException;
 import org.apache.jena.permissions.model.impl.SecuredStatementIterator;
 import org.apache.jena.rdf.model.* ;
-import org.apache.jena.shared.AddDeniedException;
-import org.apache.jena.shared.DeleteDeniedException;
-import org.apache.jena.shared.ReadDeniedException;
-import org.apache.jena.shared.UpdateDeniedException;
 
 /**
  * The interface for secured Resource instances.
@@ -39,112 +36,101 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredResource addLiteral( final Property p, final boolean o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property p, final char o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, value, d )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property value, final double d )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, value, d )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property value, final float d )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property p, final Literal o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property p, final long o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addLiteral( final Property p, final Object o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addProperty( final Property p, final RDFNode o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addProperty( final Property p, final String o )
-			throws UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, literal(lexicalForm,datatype) )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addProperty( final Property p, final String lexicalForm,
-			final RDFDatatype datatype ) throws UpdateDeniedException, AddDeniedException;
+			final RDFDatatype datatype ) throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Create (this, p, o )
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Resource addProperty( final Property p, final String o,
-			final String l ) throws UpdateDeniedException, AddDeniedException;
+			final String l ) throws AccessDeniedException;
 
 	@Override
 	public SecuredResource asResource();
@@ -157,193 +143,191 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean equals( final Object o ) throws ReadDeniedException;
+	public boolean equals( final Object o ) throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public AnonId getId() throws ReadDeniedException;
+	public AnonId getId() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getLocalName() throws ReadDeniedException;
+	public String getLocalName() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getNameSpace() throws ReadDeniedException;
+	public String getNameSpace() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement getProperty( final Property p )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredResource getPropertyResourceValue( final Property p )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement getRequiredProperty( final Property p )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getURI() throws ReadDeniedException;
+	public String getURI() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final boolean o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final char o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final double o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final float o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final long o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasLiteral( final Property p, final Object o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean hasProperty( final Property p ) throws ReadDeniedException;
+	public boolean hasProperty( final Property p ) throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasProperty( final Property p, final RDFNode o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,o)
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasProperty( final Property p, final String o )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read SecTriple(this,p,literal(o,l))
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasProperty( final Property p, final String o, final String l )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean hasURI( final String uri ) throws ReadDeniedException;
+	public boolean hasURI( final String uri ) throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read on returned Statements
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatementIterator listProperties()
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read on returned Statements
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatementIterator listProperties( final Property p )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Delete on associated Statements
-	 * @throws UpdateDeniedException
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredResource removeAll( final Property p )
-			throws UpdateDeniedException, DeleteDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Delete on all Statements
-	 * @throws UpdateDeniedException
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public SecuredResource removeProperties() throws UpdateDeniedException, DeleteDeniedException;
+	public SecuredResource removeProperties() throws AccessDeniedException;
 }

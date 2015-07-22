@@ -38,6 +38,7 @@ import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
 import org.apache.jena.graph.Triple ;
 import org.apache.jena.query.ARQ ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.riot.Lang ;
 import org.apache.jena.riot.RDFLanguages ;
 import org.apache.jena.riot.SysRIOT ;
@@ -70,7 +71,7 @@ public class RiotLib
         if ( isBNodeIRI(iri) )
         {
             String s = iri.substring(bNodeLabelStart.length()) ;
-            Node n = NodeFactory.createBlankNode(s) ;
+            Node n = NodeFactory.createAnon(new AnonId(s)) ;
             return n ;
         }
         return NodeFactory.createURI(iri) ;

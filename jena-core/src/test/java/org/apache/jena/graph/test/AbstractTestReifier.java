@@ -148,7 +148,7 @@ public abstract class AbstractTestReifier extends GraphTestBase
     public void testRetrieveTriplesByNode()
     {
         Graph G = getGraph();
-        Node N = NodeFactory.createBlankNode(), M = NodeFactory.createBlankNode();
+        Node N = NodeFactory.createAnon(), M = NodeFactory.createAnon();
         ReifierStd.reifyAs( G , N, triple( "x R y" ) );
         assertEquals( "gets correct triple", triple( "x R y" ), ReifierStd.getTriple( G , N ) );
         ReifierStd.reifyAs( G, M, triple( "p S q" ) );

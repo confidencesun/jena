@@ -23,6 +23,7 @@ import org.apache.jena.datatypes.RDFDatatype ;
 import org.apache.jena.datatypes.TypeMapper ;
 import org.apache.jena.graph.impl.LiteralLabel ;
 import org.apache.jena.graph.impl.LiteralLabelFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 
 public class NodeFactory {
 
@@ -30,61 +31,29 @@ public class NodeFactory {
         return TypeMapper.getInstance().getSafeTypeByName(s) ;
     }
 
-    /** Make a fresh blank node */
-    public static Node createBlankNode() {
-        return createBlankNode(BlankNodeId.create()) ;
-    }
-
-    /** make a blank node with the specified label
-     */
-    public static Node createBlankNode(BlankNodeId id) {
-        return new Node_Blank(id) ; 
+    /** make a blank node with a fresh anon id */
+    public static Node createAnon() {
+        return createAnon(AnonId.create()) ;
     }
 
     /** make a blank node with the specified label */
-    public static Node createBlankNode(String string) {
-        BlankNodeId id = BlankNodeId.create(string) ;
-        return new Node_Blank(id) ; 
-    }
-    
-    /** make a blank node with a fresh anon id
-     *  @deprecated Use {@link #createBlankNode()}
-     */
-    @Deprecated
-    public static Node createAnon() {
-        return createAnon(BlankNodeId.create()) ;
-    }
-
-    /** make a blank node with the specified label
-     * @deprecated Use {@link #createBlankNode(BlankNodeId)}
-     */
-    @Deprecated
-    public static Node createAnon(BlankNodeId id) {
-        return new Node_Blank(id) ; 
-    }
-
-    /** make a blank node with the specified label
-     * @deprecated Use {@link #createBlankNode(String)}
-     */
-    @Deprecated
-    public static Node createAnon(String string) {
-        BlankNodeId id = BlankNodeId.create(string) ;
-        return new Node_Blank(id) ; 
+    public static Node createAnon(AnonId id) {
+        return Node.create(Node.makeAnon, id) ;
     }
 
     /** make a literal node with the specified literal value */
     public static Node createLiteral(LiteralLabel lit) {
-        return new Node_Literal( lit ) ;
+        return Node.create(Node.makeLiteral, lit) ;
     }
 
     /** make a URI node with the specified URIref string */
     public static Node createURI(String uri) {
-        return new Node_URI(uri) ;
+        return Node.create(Node.makeURI, uri) ;
     }
 
     /** make a variable node with a given name */
     public static Node createVariable(String name) {
-        return new Node_Variable(name) ;
+        return Node.create(Node.makeVariable, Node_Variable.variable(name)) ;
     }
 
     public static Node createLiteral(String value) {

@@ -21,11 +21,12 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple ;
-import org.apache.jena.permissions.SecuredItem;
 import org.apache.jena.permissions.SecurityEvaluator;
 import org.apache.jena.permissions.SecurityEvaluator.Action;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.impl.SecuredItem;
+import org.apache.jena.permissions.impl.SecuredItemImpl;
 
 /**
  * A filter for to filter ExtendedIterators on Triples.
@@ -35,7 +36,7 @@ import org.apache.jena.permissions.SecurityEvaluator.Action;
 public class PermTripleFilter implements Predicate<Triple>
 {
 	private final SecurityEvaluator evaluator;
-	private final Node modelNode;
+	private final SecNode modelNode;
 	private final Set<Action> actions;
 	private final Object principal;
 
@@ -153,9 +154,10 @@ public class PermTripleFilter implements Predicate<Triple>
 	}
 
 	@Override
-	public boolean test( final Triple triple )
+	public boolean test( final Triple t )
 	{
-		return evaluator.evaluateAny(principal, actions, modelNode,triple);
+		return evaluator.evaluateAny(principal, actions, modelNode,
+				SecuredItemImpl.convert(t));
 	}
 
 }

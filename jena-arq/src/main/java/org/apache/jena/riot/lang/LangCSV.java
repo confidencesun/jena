@@ -144,7 +144,7 @@ public class LangCSV implements LangRIOT {
 	}
 	
 	public static Node caculateSubject(int rowNum, String filename){
-		Node subject = NodeFactory.createBlankNode();
+		Node subject = NodeFactory.createAnon();
 //		String uri = IRIResolver.resolveString(filename) + "#Row_" + rowNum; 
 //		Node subject =  NodeFactory.createURI(uri);
 		return subject;

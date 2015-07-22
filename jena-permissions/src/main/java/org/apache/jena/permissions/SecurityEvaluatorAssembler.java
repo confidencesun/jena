@@ -58,7 +58,7 @@ import org.apache.jena.rdf.model.* ;
  * </p>
  * The assembler file should include the following
  * <code><pre>
- * &commat;prefix xsd:        <http://www.w3.org/2001/XMLSchema#>
+ * @prefix xsd:        <http://www.w3.org/2001/XMLSchema#>
  * 
  * <>; ja:loadClass	"org.apache.jena.security.SecuredAssembler" .
  * 

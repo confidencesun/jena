@@ -22,19 +22,13 @@ import java.lang.reflect.Proxy;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.jena.graph.FrontsTriple;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.permissions.SecuredItem;
+import org.apache.jena.permissions.AccessDeniedException;
 import org.apache.jena.permissions.SecurityEvaluator;
 import org.apache.jena.permissions.SecurityEvaluator.Action;
-import org.apache.jena.shared.AddDeniedException;
-import org.apache.jena.shared.DeleteDeniedException;
-import org.apache.jena.shared.ReadDeniedException;
-import org.apache.jena.shared.UpdateDeniedException;
-import org.apache.jena.sparql.expr.Expr;
-import org.apache.jena.sparql.util.NodeUtils;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.SecurityEvaluator.SecTriple;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode.Type;
+import org.apache.jena.rdf.model.Statement ;
 import org.apache.jena.util.iterator.ExtendedIterator ;
 import org.apache.jena.vocabulary.RDF ;
 
@@ -52,89 +46,62 @@ public abstract class SecuredItemImpl implements SecuredItem
 	private class CacheKey implements Comparable<CacheKey>
 	{
 		private final Action action;
-		private final Node modelNode;
-		private final Triple from;
-		private final Triple to;
+		private final SecNode modelNode;
+		private final SecTriple from;
+		private final SecTriple to;
 		private Integer hashCode;
 
-		public CacheKey( final Action action, final Node modelNode )
+		public CacheKey( final Action action, final SecNode modelNode )
 		{
 			this(action, modelNode, null, null);
 		}
 
-		public CacheKey( final Action action, final Node modelNode,
-				final Triple to )
+		public CacheKey( final Action action, final SecNode modelNode,
+				final SecTriple to )
 		{
 			this(action, modelNode, to, null);
 		}
 
-		public CacheKey( final Action action, final Node modelNode,
-				final Triple to, final Triple from )
+		public CacheKey( final Action action, final SecNode modelNode,
+				final SecTriple to, final SecTriple from )
 		{
 			this.action = action;
 			this.modelNode = modelNode;
 			this.to = to;
 			this.from = from;
 		}
-		
-		private int compare(Node n1, Node n2)
-		{
-			if (Node.ANY.equals( n1 ))
-			{
-				if (Node.ANY.equals(n2))
-				{
-					return Expr.CMP_EQUAL;
-				}
-				return Expr.CMP_LESS;
-			}
-			if (Node.ANY.equals( n2 ))
-			{
-				return Expr.CMP_GREATER;
-			}
-			return NodeUtils.compareRDFTerms( n1, n2 );
-		}
 
-		private int compare(Triple t1, Triple t2)
-		{
-			if (t1 == null)
-			{
-				if (t2 == null)
-				{
-					return Expr.CMP_EQUAL;
-				}
-				return Expr.CMP_LESS;
-			}
-			if (t2 == null)
-			{
-				return Expr.CMP_GREATER;
-			}
-			int retval = compare(t1.getSubject(), t2.getSubject());
-			if (retval == Expr.CMP_EQUAL)
-			{
-				retval = compare(t1.getPredicate(), t2.getPredicate());
-			}
-			if (retval == Expr.CMP_EQUAL)
-			{
-				retval = compare(t1.getObject(), t2.getObject());
-			}
-			return retval;
-		}
-		
 		@Override
 		public int compareTo( final CacheKey other )
 		{
 			int retval = this.action.compareTo(other.action);
-			if (retval == Expr.CMP_EQUAL)
+			if (retval == 0)
 			{
-				retval = NodeUtils.compareRDFTerms(this.modelNode,other.modelNode);
+				retval = this.modelNode.compareTo(other.modelNode);
 			}
-			if (retval == Expr.CMP_EQUAL)
+			if (retval == 0)
 			{
-				retval =compare(this.to, other.to);
+				if (this.to == null)
+				{
+					if (other.to == null)
+					{
+						return 0;
+					}
+					return -1;
+				}
+				retval = this.to.compareTo(other.to);
 			}
-			if (retval == Expr.CMP_EQUAL)
+			if (retval == 0)
 			{
-				retval = compare(this.from, other.from);
+				if (this.from == null)
+				{
+					if (other.from == null)
+					{
+						return 0;
+					}
+					return -1;
+				}
+				retval = this.from.compareTo(other.from);
 			}
 			return retval;
 		}
@@ -164,23 +131,34 @@ public abstract class SecuredItemImpl implements SecuredItem
 	// the maximum size of the cache
 	public static int MAX_CACHE = 100;
 	// the cache for this thread.
-	public static final ThreadLocal<LRUMap<CacheKey,Boolean>> CACHE = new ThreadLocal<LRUMap<CacheKey,Boolean>>();
+	public static final ThreadLocal<LRUMap> CACHE = new ThreadLocal<LRUMap>();
 	// the number of times this thread has recursively called the constructor.
 	public static final ThreadLocal<Integer> COUNT = new ThreadLocal<Integer>();
 	
 	/**
-	 * May Convert a Jena Node object into the SecurityEvaluator.VARIABLE instance.
+	 * Convert a Jena Node object into a SecNode object.
 	 * @param jenaNode The Jena node to convert.
-	 * @return The Node that represents the jenaNode.
+	 * @return The SecNode that represents the jenaNode.
 	 */
-	private static Node convert( final Node jenaNode )
+	public static SecNode convert( final org.apache.jena.graph.Node jenaNode )
 	{
-		
+		if (org.apache.jena.graph.Node.ANY.equals(jenaNode))
+		{
+			return SecNode.ANY;
+		}
+		if (jenaNode.isLiteral())
+		{
+			return new SecNode(Type.Literal, jenaNode.getLiteral().toString());
+		}
+		if (jenaNode.isBlank())
+		{
+			return new SecNode(Type.Anonymous, jenaNode.getBlankNodeLabel());
+		}
 		if (jenaNode.isVariable())
 		{
-			return SecurityEvaluator.VARIABLE;
+			return SecNode.VARIABLE;
 		}
-		return jenaNode;
+		return new SecNode(Type.URI, jenaNode.getURI());
 	}
 
 	/**
@@ -188,16 +166,12 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * @param jenaTriple The Jena Triple to convert.
 	 * @return The SecTriple that represents the jenaTriple.
 	 */
-	private static Triple convert(
-			final Triple jenaTriple )
+	public static SecTriple convert(
+			final org.apache.jena.graph.Triple jenaTriple )
 	{
-		if (jenaTriple.getSubject().isVariable() || jenaTriple.getPredicate().isVariable() || jenaTriple.getObject().isVariable())
-		{ 
-			return new Triple(SecuredItemImpl.convert(jenaTriple.getSubject()),	
+		return new SecTriple(SecuredItemImpl.convert(jenaTriple.getSubject()),
 				SecuredItemImpl.convert(jenaTriple.getPredicate()),
 				SecuredItemImpl.convert(jenaTriple.getObject()));
-		}
-		return jenaTriple;
 	}
 
 	/**
@@ -233,7 +207,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 		final Integer i = SecuredItemImpl.COUNT.get();
 		if (i == null)
 		{
-			SecuredItemImpl.CACHE.set(new LRUMap<CacheKey,Boolean>(Math.max(
+			SecuredItemImpl.CACHE.set(new LRUMap(Math.max(
 					SecuredItemImpl.MAX_CACHE, 100)));
 			SecuredItemImpl.COUNT.set( 1 );
 		}
@@ -247,7 +221,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	private final SecurityEvaluator securityEvaluator;
 
 	// the secured node for that names the graph.
-	private final Node modelNode;
+	private final SecNode modelNode;
 
 	// the item holder that we are evaluating.
 	private final ItemHolder<?, ?> itemHolder;
@@ -276,7 +250,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new IllegalArgumentException("ItemHolder may not be null");
 		}
 		this.securityEvaluator = securedItem.getSecurityEvaluator();
-		this.modelNode =  securedItem.getModelNode();
+		this.modelNode = new SecurityEvaluator.SecNode(
+				SecurityEvaluator.SecNode.Type.URI, securedItem.getModelIRI());
 		this.itemHolder = holder;
 	}
 
@@ -306,7 +281,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new IllegalArgumentException("ItemHolder may not be null");
 		}
 		this.securityEvaluator = securityEvaluator;
-		this.modelNode = NodeFactory.createURI(modelURI);
+		this.modelNode = new SecurityEvaluator.SecNode(
+				SecurityEvaluator.SecNode.Type.URI, modelURI);
 		this.itemHolder = holder;
 	}
 
@@ -326,18 +302,18 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 */
 	private Boolean cacheGet( final CacheKey key )
 	{
-		final LRUMap<CacheKey,Boolean> cache = SecuredItemImpl.CACHE.get();
+		final LRUMap cache = SecuredItemImpl.CACHE.get();
 		return (cache == null) ? null : (Boolean) cache.get(key);
 	}
 
 	/**
-	 * set the cache value.
+	 * set teh cache value.
 	 * @param key The key to set the value for.
 	 * @param value The value to set.
 	 */
-	private void cachePut( final CacheKey key, final boolean value )
+	void cachePut( final CacheKey key, final boolean value )
 	{
-		final LRUMap<CacheKey,Boolean> cache = SecuredItemImpl.CACHE.get();
+		final LRUMap cache = SecuredItemImpl.CACHE.get();
 		if (cache != null)
 		{
 			cache.put(key, value);
@@ -363,11 +339,14 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	
-	@Override
-	public boolean canCreate( final Triple triple )
+	public boolean canCreate( final org.apache.jena.graph.Triple t )
 	{
-		Triple t = convert(triple);
+		return canCreate(SecuredItemImpl.convert(t));
+	}
+
+	@Override
+	public boolean canCreate( final SecTriple t )
+	{
 		final CacheKey key = new CacheKey(Action.Create, modelNode, t);
 		Boolean retval = cacheGet(key);
 		if (retval == null)
@@ -378,10 +357,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canCreate( final FrontsTriple frontsTriple )
+	public boolean canCreate( final Statement s )
 	{
-		return canCreate(frontsTriple.asTriple());
+		return canCreate(s.asTriple());
 	}
 
 	/*
@@ -402,10 +380,14 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canDelete( final Triple triple )
+	public boolean canDelete( final org.apache.jena.graph.Triple t )
 	{
-		Triple t = convert(triple);
+		return canDelete(SecuredItemImpl.convert(t));
+	}
+
+	@Override
+	public boolean canDelete( final SecTriple t )
+	{
 		final CacheKey key = new CacheKey(Action.Delete, modelNode, t);
 		Boolean retval = cacheGet(key);
 		if (retval == null)
@@ -416,10 +398,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canDelete( final FrontsTriple frontsTriple )
+	public boolean canDelete( final Statement s )
 	{
-		return canDelete(frontsTriple.asTriple());
+		return canDelete(s.asTriple());
 	}
 
 	/*
@@ -440,10 +421,14 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canRead( final Triple triple )
+	public boolean canRead( final org.apache.jena.graph.Triple t )
 	{
-		Triple t = convert(triple);
+		return canRead(SecuredItemImpl.convert(t));
+	}
+
+	@Override
+	public boolean canRead( final SecTriple t )
+	{
 		final CacheKey key = new CacheKey(Action.Read, modelNode, t);
 		Boolean retval = cacheGet(key);
 		if (retval == null)
@@ -454,10 +439,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canRead( final FrontsTriple frontsTriple )
+	public boolean canRead( final Statement s )
 	{
-		return canRead(frontsTriple.asTriple());
+		return canRead(s.asTriple());
 	}
 
 	/*
@@ -478,11 +462,16 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canUpdate( final Triple f, final Triple t )
+	public boolean canUpdate( final org.apache.jena.graph.Triple from,
+			final org.apache.jena.graph.Triple to )
 	{
-		Triple from = convert(f);
-		Triple to = convert(t);
+		return canUpdate(SecuredItemImpl.convert(from),
+				SecuredItemImpl.convert(to));
+	}
+
+	@Override
+	public boolean canUpdate( final SecTriple from, final SecTriple to )
+	{
 		final CacheKey key = new CacheKey(Action.Update, modelNode, from, to);
 		Boolean retval = cacheGet(key);
 		if (retval == null)
@@ -493,8 +482,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
-	@Override
-	public boolean canUpdate( final FrontsTriple from, final FrontsTriple to )
+	public boolean canUpdate( final Statement from, final Statement to )
 	{
 		return canUpdate(from.asTriple(), to.asTriple());
 	}
@@ -502,61 +490,58 @@ public abstract class SecuredItemImpl implements SecuredItem
 	/**
 	 * check that create on the securedModel is allowed,
 	 * 
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkCreate() throws AddDeniedException
+	protected void checkCreate()
 	{
 		if (!canCreate())
 		{
-			throw new AddDeniedException( SecuredItem.Util.modelPermissionMsg(modelNode));
+			throw new AccessDeniedException(modelNode, Action.Create);
 		}
+	}
+
+	protected void checkCreate( final org.apache.jena.graph.Triple t )
+	{
+		checkCreate(SecuredItemImpl.convert(t));
 	}
 
 	/**
 	 * check that the triple can be created in the securedModel.,
 	 * 
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkCreate( final Triple t ) throws AddDeniedException
+	protected void checkCreate( final SecTriple t )
 	{
 		if (!canCreate(t))
 		{
-			throw new AddDeniedException(SecuredItem.Util.triplePermissionMsg(modelNode), t );
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Create);
 		}
 	}
 
-	/**
-	 * check that the statement can be created.
-	 * @param s The statement.
-	 * @throws AddDeniedException on failure
-	 */
-	protected void checkCreate( final FrontsTriple frontsTriple ) throws AddDeniedException
+	protected void checkCreate( final Statement s )
 	{
-		checkCreate(frontsTriple.asTriple());
+		checkCreate(s.asTriple());
 	}
 
-	/**
-	 * Check that a triple can be reified.
-	 * @param uri The URI for the reification subject.  May be null.
-	 * @param front the frontstriple that is to be reified.
-	 * @throws AddDeniedException on failure to add triple
-	 * @throws UpdateDenied if the updates of the graph are not allowed.
-	 */
-	protected void checkCreateReified( final String uri, final FrontsTriple front )  throws AddDeniedException, UpdateDeniedException
+	protected void checkCreateReified( final String uri, final SecTriple t )
 	{
 		checkUpdate();
-		Triple t = front.asTriple();
-		final Node n = uri == null ? SecurityEvaluator.FUTURE : NodeFactory.createURI(uri);
-		checkCreate(new Triple(n, RDF.subject.asNode(), t.getSubject()));
-		checkCreate(new Triple(n, RDF.predicate.asNode(), t.getPredicate()));
-		checkCreate(new Triple(n, RDF.object.asNode(), t.getObject()));
+		final SecNode n = uri == null ? SecNode.FUTURE : new SecNode(Type.URI,
+				uri);
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.subject
+				.asNode()), t.getSubject()));
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.predicate
+				.asNode()), t.getPredicate()));
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.object
+				.asNode()), t.getObject()));
 	}
 
-	protected void checkCreateFrontsTriples( final ExtendedIterator<? extends FrontsTriple> stmts )  throws AddDeniedException
+	protected void checkCreateStatement( final ExtendedIterator<Statement> stmts )
 	{
-		if (!canCreate(Triple.ANY))
+		if (!canCreate(SecTriple.ANY))
 		{
 			try
 			{
@@ -573,9 +558,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	protected void checkCreateTriples(
-			final ExtendedIterator<Triple> triples ) throws AddDeniedException
+			final ExtendedIterator<org.apache.jena.graph.Triple> triples )
 	{
-		if (!canCreate(Triple.ANY))
+		if (!canCreate(SecTriple.ANY))
 		{
 			try
 			{
@@ -594,40 +579,46 @@ public abstract class SecuredItemImpl implements SecuredItem
 	/**
 	 * check that delete on the securedModel is allowed,
 	 * 
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkDelete() throws DeleteDeniedException
+	protected void checkDelete()
 	{
 		if (!canDelete())
 		{
-			throw new DeleteDeniedException(SecuredItem.Util.modelPermissionMsg(modelNode));
+			throw new AccessDeniedException(modelNode, Action.Delete);
 		}
+	}
+
+	protected void checkDelete( final org.apache.jena.graph.Triple t )
+	{
+		checkDelete(SecuredItemImpl.convert(t));
 	}
 
 	/**
 	 * check that the triple can be deleted in the securedModel.,
 	 * 
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkDelete( final Triple t )
+	protected void checkDelete( final SecTriple t )
 	{
 		if (!canDelete(t))
 		{
-			throw new DeleteDeniedException(SecuredItem.Util.triplePermissionMsg(modelNode), t);
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Delete);
 		}
 	}
 
-	protected void checkDelete( final FrontsTriple frontsTriple )
+	protected void checkDelete( final Statement s )
 	{
-		checkDelete(frontsTriple.asTriple());
+		checkDelete(s.asTriple());
 	}
 
-	protected void checkDeleteFrontsTriples(
-			final ExtendedIterator<? extends FrontsTriple> stmts )
+	protected void checkDeleteStatements(
+			final ExtendedIterator<Statement> stmts )
 	{
-		if (!canDelete(Triple.ANY))
+		if (!canDelete(SecTriple.ANY))
 		{
 			try
 			{
@@ -644,9 +635,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	protected void checkDeleteTriples(
-			final ExtendedIterator<Triple> triples )
+			final ExtendedIterator<org.apache.jena.graph.Triple> triples )
 	{
-		if (!canDelete(Triple.ANY))
+		if (!canDelete(SecTriple.ANY))
 		{
 			try
 			{
@@ -665,37 +656,43 @@ public abstract class SecuredItemImpl implements SecuredItem
 	/**
 	 * check that read on the securedModel is allowed,
 	 * 
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkRead() throws ReadDeniedException
+	protected void checkRead()
 	{
 		if (!canRead())
 		{
-			throw new ReadDeniedException(SecuredItem.Util.modelPermissionMsg(modelNode));
+			throw new AccessDeniedException(modelNode, Action.Read);
 		}
+	}
+
+	protected void checkRead( final org.apache.jena.graph.Triple t )
+	{
+		checkRead(SecuredItemImpl.convert(t));
 	}
 
 	/**
 	 * check that the triple can be read in the securedModel.,
 	 * 
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkRead( final Triple t ) throws ReadDeniedException
+	protected void checkRead( final SecTriple t )
 	{
 		if (!canRead(t))
 		{
-			throw new ReadDeniedException(SecuredItem.Util.triplePermissionMsg(modelNode), t);
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Read);
 		}
 	}
 
-	protected void checkRead( final FrontsTriple frontsTriple ) throws ReadDeniedException
+	protected void checkRead( final Statement s )
 	{
-		checkRead(frontsTriple.asTriple());
+		checkRead(s.asTriple());
 	}
 
-	protected void checkReadFrontsTriples( final ExtendedIterator<FrontsTriple> stmts ) throws ReadDeniedException
+	protected void checkReadStatement( final ExtendedIterator<Statement> stmts )
 	{
 		try
 		{
@@ -711,7 +708,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	protected void checkReadTriples(
-			final ExtendedIterator<Triple> triples ) throws ReadDeniedException
+			final ExtendedIterator<org.apache.jena.graph.Triple> triples )
 	{
 		try
 		{
@@ -729,15 +726,21 @@ public abstract class SecuredItemImpl implements SecuredItem
 	/**
 	 * check that update on the securedModel is allowed,
 	 * 
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkUpdate() throws UpdateDeniedException
+	protected void checkUpdate()
 	{
 		if (!canUpdate())
 		{
-			throw new UpdateDeniedException(SecuredItem.Util.modelPermissionMsg(modelNode));
+			throw new AccessDeniedException(modelNode, Action.Update);
 		}
+	}
+
+	protected void checkUpdate( final org.apache.jena.graph.Triple from,
+			final org.apache.jena.graph.Triple to )
+	{
+		checkUpdate(SecuredItemImpl.convert(from), SecuredItemImpl.convert(to));
 	}
 
 	/**
@@ -745,15 +748,15 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * 
 	 * @param from the starting triple
 	 * @param to the final triple.
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkUpdate( final Triple from, final Triple to ) throws UpdateDeniedException
+	protected void checkUpdate( final SecTriple from, final SecTriple to )
 	{
 		if (!canUpdate(from, to))
 		{
-			throw new UpdateDeniedException( String.format(
-					"%s: %s to %s", SecuredItem.Util.modelPermissionMsg(modelNode), from, to));
+			throw new AccessDeniedException(modelNode, String.format(
+					"%s to %s", from, to), Action.Update);
 		}
 	}
 
@@ -803,14 +806,14 @@ public abstract class SecuredItemImpl implements SecuredItem
 	@Override
 	public String getModelIRI()
 	{
-		return modelNode.getURI();
+		return modelNode.getValue();
 	}
 
 	/**
 	 * get the name of the model.
 	 */
 	@Override
-	public Node getModelNode()
+	public SecNode getModelNode()
 	{
 		return modelNode;
 	}

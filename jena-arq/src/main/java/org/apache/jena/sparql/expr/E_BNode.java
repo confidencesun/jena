@@ -54,7 +54,7 @@ public class E_BNode extends ExprFunctionN // 0 or one
             expr = getArg(1) ;
 
         if ( expr == null )
-            return NodeValue.makeNode(NodeFactory.createBlankNode()) ;
+            return NodeValue.makeNode(NodeFactory.createAnon()) ;
 
         NodeValue x = expr.eval(binding, env) ;
         if ( ! x.isString() )

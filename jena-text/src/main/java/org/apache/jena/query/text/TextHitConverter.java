@@ -32,25 +32,20 @@ public class TextHitConverter implements Function<TextHit, Binding>
     private Binding binding;
     private Var match;
     private Var score;
-    private Var literal;
 
-    public TextHitConverter(Binding binding, Var match, Var score, Var literal) {
+    public TextHitConverter(Binding binding, Var match, Var score) {
         this.binding = binding;
         this.match = match;
         this.score = score;
-        this.literal = literal;
     }
     
     @Override
     public Binding apply(TextHit hit) {
-        if (score == null && literal == null)
+        if (score == null)
             return BindingFactory.binding(binding, match, hit.getNode());
         BindingMap bmap = BindingFactory.create(binding);
         bmap.add(match, hit.getNode());
-        if (score != null)
-            bmap.add(score, NodeFactoryExtra.floatToNode(hit.getScore()));
-        if (literal != null)
-            bmap.add(literal, hit.getLiteral());
+        bmap.add(score, NodeFactoryExtra.floatToNode(hit.getScore()));
         return bmap;
     }
 }

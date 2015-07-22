@@ -146,8 +146,6 @@ public class ServerTest {
         Collection<String> keys = Iter.toList(DataAccessPointRegistry.get().keys().iterator()) ;
         for (String k : keys)
             DataAccessPointRegistry.get().remove(k) ;
-        // Clear configuration directory.
-        FileOps.clearAll(FusekiServer.dirConfiguration.toFile()) ;
     }
 
     public static void resetServer() {

@@ -18,9 +18,6 @@
 
 package org.apache.jena.fuseki.mgt;
 
-import javax.servlet.http.HttpServletRequest ;
-import javax.servlet.http.HttpServletResponse ;
-
 import org.apache.jena.atlas.json.JsonValue ;
 import org.apache.jena.fuseki.servlets.HttpAction ;
 import org.apache.jena.fuseki.servlets.ServletOps ;
@@ -30,27 +27,6 @@ import org.apache.jena.web.HttpSC ;
 public abstract class ActionContainerItem extends ActionCtl {
     
     public ActionContainerItem() { super() ; }
-
-    // Redirect operations so they dispatch to perform(HttpAction)
-    @Override
-    final protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        doCommon(request, response);
-    }
-
-    @Override
-    final protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        doCommon(request, response);
-    }
-    
-    @Override
-    final protected void doHead(HttpServletRequest request, HttpServletResponse response) {
-        doCommon(request, response);
-    }
-    
-    @Override
-    final protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
-        doCommon(request, response);
-    }
     
     @Override
     final
@@ -91,7 +67,7 @@ public abstract class ActionContainerItem extends ActionCtl {
         ServletOps.sendJsonReponse(action, v);
     }
     
-    /** POST request on the container - respond with JSON, or null for plain 200 */  
+    /** POST request on an item in the container - respond with JSON, or null for plain 200 */  
     protected abstract JsonValue execPostContainer(HttpAction action) ;
     /** POST request on an item in the container - respond with JSON, or null for plain 200 */  
     protected abstract JsonValue execPostItem(HttpAction action) ;

@@ -192,11 +192,11 @@ public class BindingVector implements BindingEnvironment {
     @Override
     public Triple instantiate(TriplePattern pattern) {
         Node s = getGroundVersion(pattern.getSubject());
-        if (s.isVariable()) s = NodeFactory.createBlankNode();
+        if (s.isVariable()) s = NodeFactory.createAnon();
         Node p = getGroundVersion(pattern.getPredicate());
-        if (p.isVariable()) p = NodeFactory.createBlankNode();
+        if (p.isVariable()) p = NodeFactory.createAnon();
         Node o = getGroundVersion(pattern.getObject());
-        if (o.isVariable()) o = NodeFactory.createBlankNode();
+        if (o.isVariable()) o = NodeFactory.createAnon();
         return new Triple(s, p, o);
     }
     

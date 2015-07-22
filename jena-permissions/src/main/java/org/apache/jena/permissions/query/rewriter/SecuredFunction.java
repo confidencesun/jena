@@ -17,24 +17,26 @@
  */
 package org.apache.jena.permissions.query.rewriter;
 
-import java.util.List ;
-
+import java.util.List;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.Triple ;
-import org.apache.jena.permissions.SecurityEvaluator ;
-import org.apache.jena.permissions.SecurityEvaluator.Action ;
+import org.apache.jena.permissions.SecurityEvaluator;
+import org.apache.jena.permissions.SecurityEvaluator.Action;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.SecurityEvaluator.SecTriple;
+import org.apache.jena.permissions.impl.SecuredItemImpl;
 import org.apache.jena.sparql.core.Var ;
 import org.apache.jena.sparql.engine.binding.Binding ;
 import org.apache.jena.sparql.expr.* ;
 import org.apache.jena.sparql.function.FunctionEnv ;
-import org.apache.jena.sparql.graph.NodeTransform ;
+import org.apache.jena.sparql.graph.NodeTransform;
 
 public class SecuredFunction extends ExprFunctionN
 {
 	private final SecurityEvaluator securityEvaluator;
 	private final List<Node> variables;
 	private final List<Triple> bgp;
-	private final Node graphIRI;
+	private final SecNode graphIRI;
 	
 	private static ExprList createArgs( List<Node> variables )
 	{
@@ -46,7 +48,7 @@ public class SecuredFunction extends ExprFunctionN
 		return retval;
 	}
 
-	public SecuredFunction( final Node graphIRI,
+	public SecuredFunction( final SecNode graphIRI,
 			final SecurityEvaluator securityEvaluator,
 			final List<Node> variables, final List<Triple> bgp )
 	{
@@ -66,7 +68,7 @@ public class SecuredFunction extends ExprFunctionN
 		Object principal = securityEvaluator.getPrincipal();
 		for (final Triple t : bgp)
 		{
-			final Triple secT = resolveTriple(t, values);
+			final SecTriple secT = createSecTriple(t, values);
 			if (!securityEvaluator.evaluate(principal, Action.Read, graphIRI, secT))
 			{
 				return false;
@@ -75,21 +77,21 @@ public class SecuredFunction extends ExprFunctionN
 		return true;
 	}
 
-	private Triple resolveTriple( final Triple t, final Binding values )
+	private SecTriple createSecTriple( final Triple t, final Binding values )
 	{
 		int idx = variables.indexOf(t.getSubject());
 
-		final Node s = idx ==-1 ? t.getSubject()
-				: values.get(Var.alloc( variables.get(idx)));
+		final SecNode s = SecuredItemImpl.convert(idx ==-1 ? t.getSubject()
+				: values.get(Var.alloc( variables.get(idx))));
 
 		idx = variables.indexOf(t.getPredicate());
-		final Node p = idx == -1 ? t
+		final SecNode p = SecuredItemImpl.convert(idx == -1 ? t
 				.getPredicate() 
-				: values.get(Var.alloc( variables.get(idx)));
+				: values.get(Var.alloc( variables.get(idx))));
 		idx = variables.indexOf(t.getObject());
-		final Node o = idx == -1 ? t.getObject()
-				: values.get(Var.alloc( variables.get(idx)));
-		return new Triple(s, p, o);
+		final SecNode o = SecuredItemImpl.convert(idx == -1 ? t.getObject()
+				: values.get(Var.alloc( variables.get(idx))));
+		return new SecTriple(s, p, o);
 	}
 
 

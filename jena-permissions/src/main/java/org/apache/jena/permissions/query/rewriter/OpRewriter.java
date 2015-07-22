@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.graph.Node ;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple ;
-import org.apache.jena.permissions.SecuredItem;
+import org.apache.jena.permissions.AccessDeniedException;
 import org.apache.jena.permissions.SecurityEvaluator;
 import org.apache.jena.permissions.SecurityEvaluator.Action;
-import org.apache.jena.shared.ReadDeniedException;
+import org.apache.jena.permissions.SecurityEvaluator.SecNode;
+import org.apache.jena.permissions.SecurityEvaluator.SecTriple;
+import org.apache.jena.permissions.impl.SecuredItemImpl;
 import org.apache.jena.sparql.algebra.Op ;
 import org.apache.jena.sparql.algebra.OpVisitor ;
 import org.apache.jena.sparql.algebra.op.* ;
@@ -45,7 +46,7 @@ public class OpRewriter implements OpVisitor
 {
 	private static Logger LOG = LoggerFactory.getLogger(OpRewriter.class);
 	private OpSequence result;
-	private final Node graphIRI;
+	private final SecNode graphIRI;
 	private final SecurityEvaluator securityEvaluator;
 	// if true the restricted data are silently ignored.
 	// default false
@@ -57,7 +58,7 @@ public class OpRewriter implements OpVisitor
 	 * @param graphIRI The IRI for the default graph.
 	 */
 	public OpRewriter( final SecurityEvaluator securityEvaluator,
-			final Node graphIRI )
+			final SecNode graphIRI )
 	{
 		this.securityEvaluator = securityEvaluator;
 		this.graphIRI = graphIRI;
@@ -73,7 +74,7 @@ public class OpRewriter implements OpVisitor
 	public OpRewriter( final SecurityEvaluator securityEvaluator,
 			final String graphIRI )
 	{
-		this(securityEvaluator, NodeFactory.createURI( graphIRI));
+		this(securityEvaluator, new SecNode(SecNode.Type.URI, graphIRI));
 	}
 
 	/**
@@ -216,12 +217,12 @@ public class OpRewriter implements OpVisitor
 			}
 			else
 			{
-				throw new ReadDeniedException(SecuredItem.Util.modelPermissionMsg(graphIRI));
+				throw new AccessDeniedException(graphIRI, Action.Read);
 			}
 		}
 
 		// if the user can read any triple just add the opBGP
-		if (securityEvaluator.evaluate(principal, Action.Read, graphIRI, Triple.ANY))
+		if (securityEvaluator.evaluate(principal, Action.Read, graphIRI, SecTriple.ANY))
 		{
 			addOp(opBGP);
 		}
@@ -335,7 +336,8 @@ public class OpRewriter implements OpVisitor
 	public void visit( final OpGraph opGraph )
 	{
 		if (LOG.isDebugEnabled()) { LOG.debug( "Starting visiting OpGraph"); }
-		final OpRewriter rewriter = new OpRewriter(securityEvaluator, opGraph.getNode());
+		final OpRewriter rewriter = new OpRewriter(securityEvaluator,
+				SecuredItemImpl.convert(opGraph.getNode()));
 		opGraph.getSubOp().visit(rewriter);
 		addOp(new OpGraph(opGraph.getNode(), rewriter.getResult()));
 	}

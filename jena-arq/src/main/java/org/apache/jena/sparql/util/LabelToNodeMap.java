@@ -82,7 +82,7 @@ public class LabelToNodeMap
     {
         if ( generateVars )
             return allocAnonVariable() ;
-        return NodeFactory.createBlankNode() ;
+        return NodeFactory.createAnon() ;
     }
     
     private Node allocAnonVariable()

@@ -17,8 +17,8 @@
  */
 package org.apache.jena.permissions.model;
 
+import org.apache.jena.permissions.AccessDeniedException;
 import org.apache.jena.rdf.model.Property ;
-import org.apache.jena.shared.ReadDeniedException;
 
 /**
  * The interface for secured Property instances.
@@ -30,9 +30,9 @@ public interface SecuredProperty extends SecuredResource, Property
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public int getOrdinal() throws ReadDeniedException;
+	public int getOrdinal() throws AccessDeniedException;
 
 }

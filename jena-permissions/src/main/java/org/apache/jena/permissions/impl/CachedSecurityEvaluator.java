@@ -19,8 +19,6 @@ package org.apache.jena.permissions.impl;
 
 import java.util.Set;
 
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.permissions.SecurityEvaluator;
 
 /**
@@ -43,44 +41,44 @@ public class CachedSecurityEvaluator implements SecurityEvaluator {
 
 	@Override
 	public boolean evaluate(final Object principal, final Action action,
-			final Node graphIRI) {
+			final SecNode graphIRI) {
 		return wrapped.evaluate(principal, action, graphIRI);
 	}
 
 	@Override
 	public boolean evaluate(final Object principal, final Action action,
-			final Node graphIRI, final Triple triple) {
+			final SecNode graphIRI, final SecTriple triple) {
 		return wrapped.evaluate(principal, action, graphIRI, triple);
 	}
 
 	@Override
 	public boolean evaluate(final Object principal, final Set<Action> actions,
-			final Node graphIRI) {
+			final SecNode graphIRI) {
 		return wrapped.evaluate(principal, actions, graphIRI);
 	}
 
 	@Override
 	public boolean evaluate(final Object principal, final Set<Action> actions,
-			final Node graphIRI, final Triple triple) {
+			final SecNode graphIRI, final SecTriple triple) {
 		return wrapped.evaluate(principal, actions, graphIRI, triple);
 	}
 
 	@Override
 	public boolean evaluateAny(final Object principal,
-			final Set<Action> actions, final Node graphIRI) {
+			final Set<Action> actions, final SecNode graphIRI) {
 		return wrapped.evaluateAny(principal, actions, graphIRI);
 	}
 
 	@Override
 	public boolean evaluateAny(final Object principal,
-			final Set<Action> actions, final Node graphIRI,
-			final Triple triple) {
+			final Set<Action> actions, final SecNode graphIRI,
+			final SecTriple triple) {
 		return wrapped.evaluateAny(principal, actions, graphIRI, triple);
 	}
 
 	@Override
 	public boolean evaluateUpdate(final Object principal,
-			final Node graphIRI, final Triple from, final Triple to) {
+			final SecNode graphIRI, final SecTriple from, final SecTriple to) {
 		return wrapped.evaluateUpdate(principal, graphIRI, from, to);
 	}
 

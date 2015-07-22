@@ -18,10 +18,10 @@
 package org.apache.jena.permissions.model;
 
 import org.apache.jena.graph.Node ;
-import org.apache.jena.permissions.SecuredItem;
+import org.apache.jena.permissions.AccessDeniedException;
+import org.apache.jena.permissions.impl.SecuredItem;
 import org.apache.jena.rdf.model.Model ;
 import org.apache.jena.rdf.model.RDFNode ;
-import org.apache.jena.shared.ReadDeniedException;
 
 /**
  * The interface for secured RDFNode instances.
@@ -33,27 +33,27 @@ public interface SecuredRDFNode extends RDFNode, SecuredItem
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public Node asNode() throws ReadDeniedException;
+	public Node asNode() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public <T extends RDFNode> boolean canAs( final Class<T> view )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 	@Override
 	public SecuredModel getModel();
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public RDFNode inModel( final Model m ) throws ReadDeniedException;
+	public RDFNode inModel( final Model m ) throws AccessDeniedException;
 
 }

@@ -18,38 +18,16 @@
 
 package org.apache.jena.shared;
 
-import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.Triple ;
 
 /**
- * Exception to throw for a denied add operation
- */
-public class AddDeniedException extends AccessDeniedException {
-	public AddDeniedException() {
-		super();
-	}
+    Exception to throw for a denied add operation
+*/
+public class AddDeniedException extends UpdateDeniedException
+    {
+    public AddDeniedException(String message)
+        { super( message ); }
 
-	public AddDeniedException(String message) {
-		super(message);
-	}
-
-	public AddDeniedException(String message, Triple triple) {
-		super(message, triple);
-	}
-
-	public AddDeniedException(Throwable throwable) {
-		super(throwable);
-	}
-
-	public AddDeniedException(Throwable throwable, Triple triple) {
-		super(throwable, triple);
-	}
-
-	public AddDeniedException(String message, Throwable throwable, Triple triple) {
-		super(message, throwable, triple);
-	}
-
-	public AddDeniedException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-}
+    public AddDeniedException( String message, Triple triple )
+        { super( message, triple ); }
+    }

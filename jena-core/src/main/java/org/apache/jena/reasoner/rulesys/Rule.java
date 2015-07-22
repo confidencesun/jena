@@ -18,16 +18,21 @@
 
 package org.apache.jena.reasoner.rulesys;
 
-import java.io.BufferedReader ;
-import java.io.IOException ;
-import java.io.InputStream ;
-import java.util.* ;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.apache.jena.datatypes.RDFDatatype ;
 import org.apache.jena.datatypes.TypeMapper ;
 import org.apache.jena.datatypes.xsd.XSDDatatype ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.reasoner.ReasonerException ;
 import org.apache.jena.reasoner.TriplePattern ;
 import org.apache.jena.shared.JenaException ;
@@ -38,8 +43,8 @@ import org.apache.jena.util.FileManager ;
 import org.apache.jena.util.FileUtils ;
 import org.apache.jena.util.PrintUtil ;
 import org.apache.jena.util.Tokenizer ;
-import org.slf4j.Logger ;
-import org.slf4j.LoggerFactory ;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**Representation of a generic inference rule. 
  * <p>
@@ -842,7 +847,7 @@ public class Rule implements ClauseEntry {
                 String uri = token.substring(1, token.length()-1);
                 return NodeFactory.createURI(uri);
             } else if (token.startsWith( "_" )) { // TODO rationalise [this is for the RIF code]
-                return NodeFactory.createBlankNode( token.substring( 1 ) );
+                return NodeFactory.createAnon( new AnonId( token.substring( 1 ) ) );
             } else if (token.indexOf(':') != -1) {
                 String exp = prefixMapping.expandPrefix(token); // Local map first
                 exp = PrintUtil.expandQname(exp);  // Retain global map for backward compatibility

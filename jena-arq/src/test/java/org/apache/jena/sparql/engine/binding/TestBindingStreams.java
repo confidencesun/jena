@@ -27,6 +27,7 @@ import org.apache.jena.atlas.junit.BaseTest ;
 import org.apache.jena.atlas.legacy.BaseTest2 ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.riot.RiotException ;
 import org.apache.jena.riot.system.PrefixMap ;
 import org.apache.jena.riot.system.PrefixMapFactory ;
@@ -97,7 +98,7 @@ public class TestBindingStreams extends BaseTest
     public void bindingStream_61()
     {
         BindingMap b = BindingFactory.create() ;
-        Node bn = NodeFactory.createBlankNode("unusual") ;
+        Node bn = NodeFactory.createAnon(new AnonId("unusual")) ;
         b.add(Var.alloc("v"), bn) ;
         testWriteRead(b) ;
     }

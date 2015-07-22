@@ -17,13 +17,9 @@
  */
 package org.apache.jena.permissions.model;
 
-
-import org.apache.jena.permissions.SecuredItem;
+import org.apache.jena.permissions.AccessDeniedException;
+import org.apache.jena.permissions.impl.SecuredItem;
 import org.apache.jena.rdf.model.* ;
-import org.apache.jena.shared.AddDeniedException;
-import org.apache.jena.shared.DeleteDeniedException;
-import org.apache.jena.shared.ReadDeniedException;
-import org.apache.jena.shared.UpdateDeniedException;
 
 /**
  * The interface for secured Statement instances.
@@ -35,123 +31,119 @@ public interface SecuredStatement extends Statement, SecuredItem
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( boolean o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( char o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( double o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( float o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( int o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeLiteralObject( long o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
-	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @sec.triple update
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeObject( RDFNode o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeObject( String o )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeObject( String o, boolean wellFormed )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeObject( String o, String l )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Update
-	 * @throws UpdateDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement changeObject( String o, String l, boolean wellFormed )
-			throws UpdateDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read, Update
 	 * @sec.triple Create
-	 * @throws ReadDeniedException
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredReifiedStatement createReifiedStatement()
-			throws ReadDeniedException, UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read, Update
 	 * @sec.triple Create
-	 * @throws ReadDeniedException
-	 * @throws UpdateDeniedException
-	 * @throws AddDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredReifiedStatement createReifiedStatement( String uri )
-			throws ReadDeniedException, UpdateDeniedException, AddDeniedException;
+			throws AccessDeniedException;
 
 	@Override
 	public SecuredAlt getAlt();
@@ -161,62 +153,62 @@ public interface SecuredStatement extends Statement, SecuredItem
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean getBoolean() throws ReadDeniedException;
+	public boolean getBoolean() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public byte getByte() throws ReadDeniedException;
+	public byte getByte() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public char getChar() throws ReadDeniedException;
+	public char getChar() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public double getDouble() throws ReadDeniedException;
+	public double getDouble() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public float getFloat() throws ReadDeniedException;
+	public float getFloat() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public int getInt() throws ReadDeniedException;
+	public int getInt() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getLanguage() throws ReadDeniedException;
+	public String getLanguage() throws AccessDeniedException;
 
 	@Override
 	public SecuredLiteral getLiteral();
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public long getLong() throws ReadDeniedException;
+	public long getLong() throws AccessDeniedException;
 
 	@Override
 	public SecuredModel getModel();
@@ -242,20 +234,20 @@ public interface SecuredStatement extends Statement, SecuredItem
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public short getShort() throws ReadDeniedException;
+	public short getShort() throws AccessDeniedException;
 
 	@Override
 	public SecuredStatement getStatementProperty( Property p );
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getString() throws ReadDeniedException;
+	public String getString() throws AccessDeniedException;
 
 	@Override
 	public SecuredResource getSubject();
@@ -263,43 +255,41 @@ public interface SecuredStatement extends Statement, SecuredItem
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean hasWellFormedXML() throws ReadDeniedException;
+	public boolean hasWellFormedXML() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean isReified() throws ReadDeniedException;
+	public boolean isReified() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
 	 * @sec.triple Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public RSIterator listReifiedStatements() throws ReadDeniedException;
+	public RSIterator listReifiedStatements() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Delete
-	 * @throws UpdateDeniedException
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public SecuredStatement remove() throws UpdateDeniedException, DeleteDeniedException;
+	public SecuredStatement remove() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Update
 	 * @sec.triple Delete
-	 * @throws UpdateDeniedException
-	 * @throws DeleteDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public void removeReification() throws UpdateDeniedException, DeleteDeniedException;
+	public void removeReification() throws AccessDeniedException;
 
 }

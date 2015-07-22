@@ -54,6 +54,6 @@ public class BlankNodeAllocatorTraditional implements BlankNodeAllocator
     @Override
     public Node create()
     {
-        return NodeFactory.createBlankNode() ;
+        return NodeFactory.createAnon() ;
     }
 }

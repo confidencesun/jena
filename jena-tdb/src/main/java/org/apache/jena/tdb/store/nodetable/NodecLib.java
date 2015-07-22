@@ -22,6 +22,7 @@ import org.apache.jena.atlas.lib.StrUtils ;
 import org.apache.jena.atlas.logging.Log ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.riot.out.NodeFmtLib ;
 import org.apache.jena.shared.PrefixMapping ;
 import org.apache.jena.sparql.sse.SSE ;
@@ -69,7 +70,7 @@ public class NodecLib
         if ( s.startsWith("_:") )   
         {
             s = s.substring(2) ;
-            return NodeFactory.createBlankNode(s) ;
+            return NodeFactory.createAnon(new AnonId(s)) ;
         }
 
         if ( s.startsWith("<") )

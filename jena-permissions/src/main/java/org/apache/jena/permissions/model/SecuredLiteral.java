@@ -19,9 +19,9 @@ package org.apache.jena.permissions.model;
 
 import org.apache.jena.datatypes.DatatypeFormatException ;
 import org.apache.jena.datatypes.RDFDatatype ;
+import org.apache.jena.permissions.AccessDeniedException;
 import org.apache.jena.rdf.model.Literal ;
 import org.apache.jena.rdf.model.Model ;
-import org.apache.jena.shared.ReadDeniedException;
 
 /**
  * The interface for secured Literal instances.
@@ -34,139 +34,132 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 	@Override
 	public SecuredLiteral asLiteral();
 
+	// @Override
+	// public SecuredResource asResource();
+
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean getBoolean() throws ReadDeniedException,
+	public boolean getBoolean() throws AccessDeniedException,
 			DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public byte getByte() throws ReadDeniedException, DatatypeFormatException;
+	public byte getByte() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public char getChar() throws ReadDeniedException, DatatypeFormatException;
+	public char getChar() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public RDFDatatype getDatatype() throws ReadDeniedException;
+	public RDFDatatype getDatatype() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getDatatypeURI() throws ReadDeniedException;
+	public String getDatatypeURI() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public double getDouble() throws ReadDeniedException,
+	public double getDouble() throws AccessDeniedException,
 			DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public float getFloat() throws ReadDeniedException,
+	public float getFloat() throws AccessDeniedException,
 			DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public int getInt() throws ReadDeniedException, DatatypeFormatException;
+	public int getInt() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getLanguage() throws ReadDeniedException;
+	public String getLanguage() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getLexicalForm() throws ReadDeniedException;
+	public String getLexicalForm() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public long getLong() throws ReadDeniedException, DatatypeFormatException;
+	public long getLong() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public short getShort() throws ReadDeniedException,
+	public short getShort() throws AccessDeniedException,
 			DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
-	 * @throws DatatypeFormatException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getString() throws ReadDeniedException,
+	public String getString() throws AccessDeniedException,
 			DatatypeFormatException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public Object getValue() throws ReadDeniedException;
+	public Object getValue() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public Literal inModel( final Model m ) throws ReadDeniedException;
+	public Literal inModel( final Model m ) throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean isWellFormedXML() throws ReadDeniedException;
+	public boolean isWellFormedXML() throws AccessDeniedException;
 
 	/**
 	 * @sec.graph Read
-	 * @throws ReadDeniedException
+	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean sameValueAs( final Literal other )
-			throws ReadDeniedException;
+			throws AccessDeniedException;
 
 }

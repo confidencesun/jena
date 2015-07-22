@@ -20,6 +20,7 @@ package org.apache.jena.graph;
 
 import org.apache.jena.datatypes.RDFDatatype ;
 import org.apache.jena.graph.impl.LiteralLabel ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.shared.JenaException ;
 import org.apache.jena.shared.PrefixMapping ;
 
@@ -82,7 +83,7 @@ public abstract class Node {
         { return false; }
 
     /** get the blank node id if the node is blank, otherwise die horribly */    
-    public BlankNodeId getBlankNodeId() 
+    public AnonId getBlankNodeId() 
         { throw new UnsupportedOperationException( this + " is not a blank node" ); }
 
     /**
@@ -175,29 +176,24 @@ public abstract class Node {
     public boolean hasURI( String uri )
         { return false; }
         
-    // DEPRECATED
     /** an abstraction to allow code sharing */
     static abstract class NodeMaker { abstract Node construct( Object x ); }
 
-    @Deprecated
-    static final NodeMaker makeAnon = new NodeMaker() {
-        @Override Node construct( Object x ) { return new Node_Blank( x ); } 
-    };
+    static final NodeMaker makeAnon = new NodeMaker()
+        { @Override
+        Node construct( Object x ) { return new Node_Blank( x ); } };
         
-   @Deprecated
-   static final NodeMaker makeLiteral = new NodeMaker() {
-        @Override Node construct( Object x ) { return new Node_Literal( x ); }
-   };
+    static final NodeMaker makeLiteral = new NodeMaker()
+        { @Override
+        Node construct( Object x ) { return new Node_Literal( x ); } };
         
-   @Deprecated
-    static final NodeMaker makeURI = new NodeMaker() {
-        @Override Node construct( Object x ) { return new Node_URI( x ); }
-   };
+    static final NodeMaker makeURI = new NodeMaker()
+        { @Override
+        Node construct( Object x ) { return new Node_URI( x ); } };
         
-   @Deprecated
-   static final NodeMaker makeVariable = new NodeMaker() {
-       @Override Node construct( Object x ) { return new Node_Variable( x ); }
-   };
+    static final NodeMaker makeVariable = new NodeMaker()
+        { @Override
+        Node construct( Object x ) { return new Node_Variable( x ); } };
         
     /**
         The canonical NULL. It appears here so that revised definitions [eg as a bnode]
@@ -212,9 +208,7 @@ public abstract class Node {
         
     /**
         We object strongly to null labels: for example, they make .equals flaky.
-        @deprecated Use specific {@link NodeFactory} functions.
     */
-    @Deprecated
     public static Node create( NodeMaker maker, Object label )
         {
         if (label == null) throw new JenaException( "Node.make: null label" );

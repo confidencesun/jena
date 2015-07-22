@@ -18,14 +18,15 @@
 
 package org.apache.jena.reasoner.rulesys.builtins;
 
-import java.security.MessageDigest ;
-import java.security.NoSuchAlgorithmException ;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.NodeFactory ;
+import org.apache.jena.rdf.model.AnonId ;
 import org.apache.jena.reasoner.rulesys.RuleContext ;
 import org.apache.jena.shared.JenaException ;
-import org.apache.xerces.impl.dv.util.Base64 ;
+import org.apache.xerces.impl.dv.util.Base64;
 
 /**
  * Bind a blank node to the first argument.
@@ -72,10 +73,11 @@ public class MakeSkolem extends BaseBuiltin {
         }
         
         try {
+            
             MessageDigest digester = MessageDigest.getInstance("MD5");
             digester.reset();
             byte[] digest = digester.digest(key.toString().getBytes());
-            Node skolem = NodeFactory.createBlankNode(Base64.encode(digest));
+            Node skolem = NodeFactory.createAnon( new AnonId( Base64.encode(digest) ) );
             return context.getEnv().bind(args[0], skolem); 
             
         } catch (NoSuchAlgorithmException e) {
